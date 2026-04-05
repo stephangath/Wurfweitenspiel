@@ -76,6 +76,14 @@ export default function App() {
     return inferNextDirection(t);
   });
 
+  // ── Start number (editable, defaults to last result) ─────────
+  const [startNumber, setStartNumber] = useState<number | null>(() => {
+    const loaded = loadCroupiers();
+    if (loaded.length === 0) return null;
+    const t = getThrowsForCroupier(loaded[0].id);
+    return t.length > 0 ? t[t.length - 1].number : null;
+  });
+
   // ── Derived ───────────────────────────────────────────────────
   const lastNumber = throws.length > 0 ? throws[throws.length - 1].number : null;
 
@@ -86,6 +94,7 @@ export default function App() {
     const croupierThrows = getThrowsForCroupier(id);
     setThrows(croupierThrows);
     setNextDirection(inferNextDirection(croupierThrows));
+    setStartNumber(croupierThrows.length > 0 ? croupierThrows[croupierThrows.length - 1].number : null);
   }, []);
 
   const handleAddCroupier = useCallback((name: string) => {
@@ -94,6 +103,7 @@ export default function App() {
     setSelectedCroupierId(created.id);
     setThrows([]);
     setNextDirection('cw');
+    setStartNumber(null);
   }, []);
 
   const handleRenameCroupier = useCallback((id: string, name: string) => {
@@ -113,6 +123,7 @@ export default function App() {
         const fallbackThrows = fallback ? getThrowsForCroupier(fallback) : [];
         setThrows(fallbackThrows);
         setNextDirection(inferNextDirection(fallbackThrows));
+        setStartNumber(fallbackThrows.length > 0 ? fallbackThrows[fallbackThrows.length - 1].number : null);
       }
     },
     [selectedCroupierId],
@@ -124,10 +135,9 @@ export default function App() {
     (number: number) => {
       if (!selectedCroupierId) return;
 
-      const prevThrow = throws.length > 0 ? throws[throws.length - 1] : null;
       const wurfweite =
-        prevThrow !== null
-          ? calcWurfweite(prevThrow.number, number, nextDirection)
+        startNumber !== null
+          ? calcWurfweite(startNumber, number, nextDirection)
           : null;
 
       const entry = storageAddThrow({
@@ -139,8 +149,9 @@ export default function App() {
 
       setThrows((prev) => [...prev, entry]);
       setNextDirection((d) => (d === 'cw' ? 'ccw' : 'cw'));
+      setStartNumber(number);
     },
-    [selectedCroupierId, throws, nextDirection],
+    [selectedCroupierId, startNumber, nextDirection],
   );
 
   const handleRemoveThrow = useCallback(
@@ -150,6 +161,7 @@ export default function App() {
       const recalculated = recalculateAndPersist(selectedCroupierId);
       setThrows(recalculated);
       setNextDirection(inferNextDirection(recalculated));
+      setStartNumber(recalculated.length > 0 ? recalculated[recalculated.length - 1].number : null);
     },
     [selectedCroupierId],
   );
@@ -159,6 +171,7 @@ export default function App() {
     clearThrowsForCroupier(selectedCroupierId);
     setThrows([]);
     setNextDirection('cw');
+    setStartNumber(null);
   }, [selectedCroupierId]);
 
   const handleDirectionChange = useCallback((d: Direction) => {
@@ -185,7 +198,7 @@ export default function App() {
 
         <PredictionDisplay
           throws={throws}
-          lastNumber={lastNumber}
+          lastNumber={startNumber}
           nextDirection={nextDirection}
         />
 
@@ -193,7 +206,8 @@ export default function App() {
           direction={nextDirection}
           onDirectionChange={handleDirectionChange}
           onSubmit={handleRecordThrow}
-          lastNumber={lastNumber}
+          startNumber={startNumber}
+          onStartNumberChange={setStartNumber}
           disabled={!selectedCroupierId}
         />
 

@@ -382,12 +382,10 @@ body {
   margin-bottom: 0.85rem;
 }
 
-.number-input__letzte {
+.number-input__start-group {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.45rem;
-  margin: 0;
-  font-size: 0.95rem;
 }
 
 .number-input__meta-label {
@@ -398,13 +396,72 @@ body {
   color: var(--text-muted);
 }
 
-.number-input__meta-value {
-  font-weight: 800;
-  font-size: 1.2rem;
-  font-variant-numeric: tabular-nums;
+.number-input__start-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  min-height: 2.2rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px dashed var(--border-gold-subtle);
+  background: var(--surface-1);
   color: var(--gold);
-  min-width: 2ch;
+  font-weight: 800;
+  font-size: 1.15rem;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
   text-shadow: 0 0 20px var(--gold-glow);
+  transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+}
+
+.number-input__start-chip:hover:not(:disabled) {
+  border-color: var(--border-gold);
+  background: rgba(212, 175, 55, 0.08);
+}
+
+.number-input__start-chip--editing {
+  border-style: solid;
+  border-color: var(--gold);
+  background: rgba(212, 175, 55, 0.15);
+  box-shadow: 0 0 12px var(--gold-glow), 0 0 0 2px rgba(212, 175, 55, 0.12);
+  animation: pulse-glow 1.5s ease-in-out infinite;
+}
+
+.number-input__start-chip:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 12px var(--gold-glow), 0 0 0 2px rgba(212, 175, 55, 0.12); }
+  50% { box-shadow: 0 0 20px var(--gold-glow), 0 0 0 3px rgba(212, 175, 55, 0.2); }
+}
+
+.number-input__start-hint {
+  font-size: 0.7rem;
+  color: var(--gold-soft);
+  font-style: italic;
+  animation: fade-in 0.2s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.numpad--editing-start {
+  outline: 2px solid rgba(212, 175, 55, 0.3);
+  outline-offset: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.numpad__btn--start-active {
+  box-shadow:
+    0 0 0 2px var(--bg-body),
+    0 0 0 4px var(--gold),
+    0 4px 16px rgba(212, 175, 55, 0.35);
+  z-index: 1;
 }
 
 .number-input__direction {
