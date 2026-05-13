@@ -39,8 +39,89 @@
   padding: 0.55rem 0;
 }
 
-.prediction-row + .prediction-row {
+.prediction-block + .prediction-block {
   border-top: 1px solid rgba(212, 175, 55, 0.12);
+  margin-top: 0.15rem;
+  padding-top: 0.35rem;
+}
+
+.prediction-block .prediction-row {
+  padding-bottom: 0.35rem;
+}
+
+/* ── Konfidenz / Ampel / EV ───────────────────────────────────── */
+
+.prediction-confidence {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  padding: 0 0 0.45rem 0;
+  margin-left: 0;
+  font-size: 0.72rem;
+  color: var(--text-muted, #8f8d88);
+}
+
+@media (min-width: 400px) {
+  .prediction-confidence {
+    margin-left: 4.65rem;
+    padding-left: 0.65rem;
+  }
+}
+
+.sig-badge {
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.06em;
+  color: var(--gold-dim, #8a7338);
+  cursor: help;
+  min-width: 2rem;
+}
+
+.bet-light {
+  display: inline-block;
+  font-size: 0.55rem;
+  line-height: 1;
+  margin-right: 0.25rem;
+  vertical-align: middle;
+}
+
+.bet-light--green {
+  color: var(--green-highlight, #2a8f52);
+  text-shadow: 0 0 6px rgba(42, 143, 82, 0.45);
+}
+
+.bet-light--yellow {
+  color: #c9a227;
+  text-shadow: 0 0 6px rgba(201, 162, 39, 0.35);
+}
+
+.bet-light--red {
+  color: var(--roulette-red, #c41e3a);
+  text-shadow: 0 0 6px rgba(196, 30, 58, 0.35);
+}
+
+.bet-light--none {
+  color: var(--text-dim, #5c5a56);
+}
+
+.prediction-confidence__bet {
+  display: inline-flex;
+  align-items: center;
+  cursor: help;
+}
+
+.bet-light-label {
+  font-size: 0.68rem;
+  font-weight: 600;
+  color: var(--text-muted, #8f8d88);
+}
+
+.ev-value {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--text-dim, #b8b5ae);
+  cursor: help;
 }
 
 .prediction-label {

@@ -1,10 +1,28 @@
 import type { Throw, Direction } from '../types';
 import { calcTargetNumbers } from './wurfweite';
+import type { Verdict } from './confidence';
+import {
+  rayleighTest,
+  binomialTailPValue,
+  bonferroniAdjust,
+  wilsonInterval,
+  evaluateBet,
+} from './confidence';
+
+export interface ConfidenceInfo {
+  pValue: number;
+  hitRate: number;
+  wilsonLo: number;
+  wilsonHi: number;
+  ev: number;
+  verdict: Verdict;
+}
 
 export interface ModePrediction {
   wurfweite: number;
   frequency: number;
   targets: [number, number, number];
+  confidence: ConfidenceInfo;
 }
 
 export interface CircularMeanPrediction {
@@ -13,6 +31,7 @@ export interface CircularMeanPrediction {
   stdDev: number;        // circular standard deviation (scaled to 0-12 range)
   resultantLength: number; // R ∈ [0,1] — concentration measure
   targets: [number, number, number];
+  confidence: ConfidenceInfo;
 }
 
 export interface Prediction {
@@ -119,20 +138,48 @@ export function predict(
 
   const modeResult = computeMode(wurfweiten);
   const circStats = computeCircularStats(wurfweiten);
+  const n = wurfweiten.length;
 
   let mode: ModePrediction | null = null;
   if (modeResult) {
+    const kMode = modeResult.frequency;
+    const pHatMode = kMode / n;
+    const binomRaw = binomialTailPValue(kMode, n, 1 / PERIOD);
+    const pMode = bonferroniAdjust(binomRaw, PERIOD);
+    const wMode = wilsonInterval(kMode, n);
+    const evalMode = evaluateBet(pHatMode, wMode.lo, pMode, n);
     mode = {
       ...modeResult,
       targets: calcTargetNumbers(lastNumber, nextDirection, modeResult.wurfweite),
+      confidence: {
+        pValue: pMode,
+        hitRate: pHatMode,
+        wilsonLo: wMode.lo,
+        wilsonHi: wMode.hi,
+        ev: evalMode.ev,
+        verdict: evalMode.verdict,
+      },
     };
   }
 
   let circularMean: CircularMeanPrediction | null = null;
   if (circStats) {
+    const kCirc = wurfweiten.filter((w) => w === circStats.roundedMean).length;
+    const pHatCirc = kCirc / n;
+    const { pValue: pRayleigh } = rayleighTest(circStats.resultantLength, n);
+    const wCirc = wilsonInterval(kCirc, n);
+    const evalCirc = evaluateBet(pHatCirc, wCirc.lo, pRayleigh, n);
     circularMean = {
       ...circStats,
       targets: calcTargetNumbers(lastNumber, nextDirection, circStats.roundedMean),
+      confidence: {
+        pValue: pRayleigh,
+        hitRate: pHatCirc,
+        wilsonLo: wCirc.lo,
+        wilsonHi: wCirc.hi,
+        ev: evalCirc.ev,
+        verdict: evalCirc.verdict,
+      },
     };
   }
 
