@@ -217,7 +217,7 @@ export default function App() {
             onRemove={handleRemoveThrow}
             onClear={handleClearThrows}
           />
-          <WurfweiteChart throws={throws} />
+          <WurfweiteChart throws={throws} direction={nextDirection} />
         </div>
       </main>
     </div>

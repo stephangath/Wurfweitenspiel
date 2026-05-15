@@ -35,6 +35,7 @@ export interface CircularMeanPrediction {
 }
 
 export interface Prediction {
+  n: number;
   mode: ModePrediction | null;
   circularMean: CircularMeanPrediction | null;
 }
@@ -133,7 +134,7 @@ export function predict(
   const wurfweiten = extractWurfweiten(throws);
 
   if (wurfweiten.length === 0) {
-    return { mode: null, circularMean: null };
+    return { n: 0, mode: null, circularMean: null };
   }
 
   const modeResult = computeMode(wurfweiten);
@@ -183,5 +184,5 @@ export function predict(
     };
   }
 
-  return { mode, circularMean };
+  return { n, mode, circularMean };
 }

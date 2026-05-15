@@ -703,6 +703,43 @@ body {
 
 /* ── Wurfweite chart ──────────────────────────────────────────── */
 
+.wurfweite-chart .section-card__title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.4rem 0.6rem;
+}
+
+.wurfweite-chart__direction {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-left: auto;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--gold);
+  cursor: help;
+}
+
+.wurfweite-chart__direction-glyph {
+  font-size: 1rem;
+  line-height: 1;
+  filter: drop-shadow(0 0 4px rgba(212, 175, 55, 0.3));
+}
+
+.wurfweite-chart__direction-n {
+  font-size: 0.66rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--text-muted);
+  letter-spacing: 0.04em;
+  text-transform: none;
+  padding: 0.1rem 0.4rem;
+  border: 1px solid rgba(212, 175, 55, 0.22);
+  border-radius: 999px;
+}
+
 .wurfweite-chart__bars {
   display: flex;
   flex-direction: column;

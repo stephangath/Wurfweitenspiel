@@ -11,6 +11,11 @@ export interface PredictionDisplayProps {
   nextDirection: Direction;
 }
 
+const DIRECTION_META: Record<Direction, { glyph: string; label: string }> = {
+  cw: { glyph: '↻', label: 'CW' },
+  ccw: { glyph: '↺', label: 'CCW' },
+};
+
 function RouletteNumber({ value }: { value: number }) {
   const color = getColor(value);
   return (
@@ -106,22 +111,45 @@ export default function PredictionDisplay({
   lastNumber,
   nextDirection,
 }: PredictionDisplayProps) {
-  const prediction: Prediction | null = useMemo(() => {
-    if (lastNumber === null || throws.length === 0) return null;
-    return predict(throws, lastNumber, nextDirection);
-  }, [throws, lastNumber, nextDirection]);
+  const directionalThrows = useMemo(
+    () => throws.filter((t) => t.direction === nextDirection),
+    [throws, nextDirection],
+  );
 
+  const prediction: Prediction | null = useMemo(() => {
+    if (lastNumber === null) return null;
+    return predict(directionalThrows, lastNumber, nextDirection);
+  }, [directionalThrows, lastNumber, nextDirection]);
+
+  const meta = DIRECTION_META[nextDirection];
+  const n = prediction?.n ?? 0;
   const hasData =
     prediction !== null &&
     (prediction.mode !== null || prediction.circularMean !== null);
 
   return (
     <section className="prediction-display">
-      <h2 className="prediction-display__title">Prognose</h2>
+      <div className="prediction-display__header">
+        <h2 className="prediction-display__title">Prognose</h2>
+        <span
+          className="prediction-display__direction"
+          title={`Auswertung nur für Würfe in Kesselrichtung ${meta.label}`}
+        >
+          <span className="prediction-display__direction-glyph" aria-hidden="true">
+            {meta.glyph}
+          </span>
+          <span>{meta.label}</span>
+          <span className="prediction-display__direction-n" title="Anzahl ausgewerteter Würfe">
+            n = {n}
+          </span>
+        </span>
+      </div>
 
       {!hasData && (
         <p className="prediction-display__empty">
-          Noch keine Wurfweiten&thinsp;—&thinsp;mindestens 2 Würfe nötig.
+          {n === 0
+            ? `Noch keine Würfe in Richtung ${meta.label}.`
+            : 'Noch keine Wurfweiten — mindestens 2 Würfe nötig.'}
         </p>
       )}
 
